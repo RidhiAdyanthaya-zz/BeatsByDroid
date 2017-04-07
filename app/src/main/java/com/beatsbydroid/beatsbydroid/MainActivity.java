@@ -1,14 +1,19 @@
 package com.beatsbydroid.beatsbydroid;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -16,6 +21,9 @@ public class MainActivity extends AppCompatActivity {
     String mode;
     Button btnBuild, btnPlay;
     RelativeLayout layoutPad;
+
+    final int btnMinSize = 100;
+    final int btnMaxSize = 300;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,21 +82,130 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+
         final View.OnClickListener btnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                if (mode.equals("build")) {
+                    final Dialog dialog = new Dialog(MainActivity.this);
+                    dialog.setContentView(R.layout.dialog_layout);
+                    Button btnDelete = (Button) dialog.findViewById(R.id.btnDelete);
+                    btnDelete.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ((RelativeLayout)view.getParent()).removeView(view);
+                            dialog.dismiss();
+                        }
+                    });
+                    final Button btnExample = new Button(dialog.getContext());
+                    final RelativeLayout exampleLayout = (RelativeLayout) dialog.findViewById(R.id.exampleLayout);
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(view.getWidth(), view.getHeight());
+                    params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                    exampleLayout.addView(btnExample, params);
+                    SeekBar heightBar = (SeekBar) dialog.findViewById(R.id.heightBar);
+                    SeekBar widthBar = (SeekBar) dialog.findViewById(R.id.widthBar);
+                    heightBar.setProgress((view.getHeight() - btnMinSize) / 2);
+                    widthBar.setProgress((view.getHeight() - btnMinSize) / 2);
 
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                    heightBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                            RelativeLayout.LayoutParams exampleParams = new RelativeLayout.LayoutParams(btnExample.getLayoutParams());
+                            exampleParams.height = btnMinSize + i * 2;
+                            exampleParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                            btnExample.setLayoutParams(exampleParams);
 
-                alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Delete", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        ((RelativeLayout)view.getParent()).removeView(view);
-                    }
-                });
+                            int topMargin = ((RelativeLayout.LayoutParams)view.getLayoutParams()).topMargin;
+                            int leftMargin = ((RelativeLayout.LayoutParams)view.getLayoutParams()).leftMargin;
+                            RelativeLayout.LayoutParams liveParams = new RelativeLayout.LayoutParams(view.getLayoutParams());
+                            liveParams.height = btnMinSize + i * 2;
+                            liveParams.topMargin = topMargin;
+                            liveParams.leftMargin = leftMargin;
+                            view.setLayoutParams(liveParams);
+                        }
 
-                alertDialog.show();
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
 
+                        }
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+
+                        }
+                    });
+
+                    widthBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                            RelativeLayout.LayoutParams exampleParams = new RelativeLayout.LayoutParams(btnExample.getLayoutParams());
+                            exampleParams.width = btnMinSize + i * 2;
+                            exampleParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                            btnExample.setLayoutParams(exampleParams);
+
+                            int topMargin = ((RelativeLayout.LayoutParams)view.getLayoutParams()).topMargin;
+                            int leftMargin = ((RelativeLayout.LayoutParams)view.getLayoutParams()).leftMargin;
+                            RelativeLayout.LayoutParams liveParams = new RelativeLayout.LayoutParams(view.getLayoutParams());
+                            liveParams.width = btnMinSize + i * 2;
+                            liveParams.topMargin = topMargin;
+                            liveParams.leftMargin = leftMargin;
+                            view.setLayoutParams(liveParams);
+                        }
+
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+
+                        }
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+
+                        }
+                    });
+
+
+                    final Spinner colorSpinner = (Spinner) dialog.findViewById(R.id.colorSpinner);
+                    colorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View v, int i, long l) {
+                            switch (colorSpinner.getSelectedItem().toString()) {
+                                case "White":
+                                    view.setBackgroundColor(Color.WHITE);
+                                    btnExample.setBackgroundColor(Color.WHITE);
+                                    break;
+                                case "Blue":
+                                    view.setBackgroundColor(Color.BLUE);
+                                    btnExample.setBackgroundColor(Color.BLUE);
+                                    break;
+                                case "Red":
+                                    view.setBackgroundColor(Color.RED);
+                                    btnExample.setBackgroundColor(Color.RED);
+                                    break;
+                                case "Green":
+                                    view.setBackgroundColor(Color.GREEN);
+                                    btnExample.setBackgroundColor(Color.GREEN);
+                                    break;
+                                case "Yellow":
+                                    view.setBackgroundColor(Color.YELLOW);
+                                    btnExample.setBackgroundColor(Color.YELLOW);
+                                    break;
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+
+                        }
+                    });
+                    dialog.show();
+
+                }
+
+                else {
+                    //when mode is in "play"
+                }
             }
+
         };
 
         layoutPad.setOnTouchListener(new View.OnTouchListener() {
@@ -99,16 +216,21 @@ public class MainActivity extends AppCompatActivity {
                     double x = motionEvent.getX();
                     double y = motionEvent.getY();
                     Button button = new Button(MainActivity.this);
+                    button.setBackgroundColor(Color.WHITE);
                     button.setOnClickListener(btnClickListener);
                     button.setOnTouchListener(btnTouchListener);
 
-                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    RelativeLayout.LayoutParams params = new
+                            RelativeLayout.LayoutParams((btnMinSize + btnMaxSize) / 2, (btnMinSize + btnMaxSize) / 2);
                     params.leftMargin = (int) x;
                     params.topMargin = (int) y;
 
                     layoutPad.addView(button, params);
 
-                    System.out.println(layoutPad.getChildCount());
+                }
+
+                else {
+                    //when mode is in play, this should do nothing
                 }
 
                 return false;
