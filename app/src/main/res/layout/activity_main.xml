@@ -32,10 +32,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="90"
+        android:layout_weight="89"
+        android:layout_marginBottom="10dp"
         android:background="@color/black"
         android:id="@+id/layoutPad">
 
-
     </RelativeLayout>
+
+
+
 </LinearLayout>

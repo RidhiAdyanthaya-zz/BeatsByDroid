@@ -3,9 +3,11 @@ package com.beatsbydroid.beatsbydroid;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,13 +65,34 @@ public class MainActivity extends AppCompatActivity {
                         shouldClick = true;
                         break;
                     case MotionEvent.ACTION_MOVE:
+                        if (event.getRawX() + dX < 0) {
+                            endX = 0;
+                        } else if (event.getRawX() + dX + view.getLayoutParams().width > layoutPad.getWidth()) {
+                            endX = layoutPad.getWidth() - view.getLayoutParams().width;
+                        } else {
+                            endX = event.getRawX() + dX;
+                        }
+                        if (event.getRawY() + dY < 0) {
+                            endY = 0;
+                        } else if (event.getRawY() + dY + view.getLayoutParams().height > layoutPad.getHeight()) {
+                            endY = layoutPad.getHeight() - view.getLayoutParams().height;
+                        } else {
+                            endY = event.getRawY() + dY;
+                        }
                         view.animate()
+                                .x(endX)
+                                .y(endY)
+                                .setDuration(0)
+                                .start();
+                        /*view.animate()
                                 .x(event.getRawX() + dX)
                                 .y(event.getRawY() + dY)
                                 .setDuration(0)
                                 .start();
                         endX = view.getX();
-                        endY = view.getY();
+                        endY = view.getY();*/
+                        System.out.println(endX + "," +endY + "," + (event.getRawX() + dX));
+
                         if (Math.abs(endX - startX) > 5 || Math.abs(endY - startY) > 5)
                             shouldClick = false;
                         break;
@@ -122,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
                             liveParams.topMargin = topMargin;
                             liveParams.leftMargin = leftMargin;
                             view.setLayoutParams(liveParams);
+                            System.out.println(liveParams.width + ", " + liveParams.height);
                         }
 
                         @Override
@@ -150,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
                             liveParams.topMargin = topMargin;
                             liveParams.leftMargin = leftMargin;
                             view.setLayoutParams(liveParams);
+                            System.out.println(liveParams.width + ", " + liveParams.height);
                         }
 
                         @Override
@@ -222,11 +247,22 @@ public class MainActivity extends AppCompatActivity {
 
                     RelativeLayout.LayoutParams params = new
                             RelativeLayout.LayoutParams((btnMinSize + btnMaxSize) / 2, (btnMinSize + btnMaxSize) / 2);
-                    params.leftMargin = (int) x;
-                    params.topMargin = (int) y;
+
+                    if (x + params.width > layoutPad.getWidth()) {
+                        params.leftMargin = layoutPad.getWidth() - params.width;
+                    }
+                    else {
+                        params.leftMargin = (int) x;
+                    }
+
+                    if (y + params.height > layoutPad.getHeight()) {
+                        params.topMargin = layoutPad.getHeight() - params.height;
+                    }
+                    else {
+                        params.topMargin = (int) y;
+                    }
 
                     layoutPad.addView(button, params);
-
                 }
 
                 else {
