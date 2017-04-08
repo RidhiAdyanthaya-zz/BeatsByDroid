@@ -84,14 +84,6 @@ public class MainActivity extends AppCompatActivity {
                                 .y(endY)
                                 .setDuration(0)
                                 .start();
-                        /*view.animate()
-                                .x(event.getRawX() + dX)
-                                .y(event.getRawY() + dY)
-                                .setDuration(0)
-                                .start();
-                        endX = view.getX();
-                        endY = view.getY();*/
-                        System.out.println(endX + "," +endY + "," + (event.getRawX() + dX));
 
                         if (Math.abs(endX - startX) > 5 || Math.abs(endY - startY) > 5)
                             shouldClick = false;
@@ -128,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     SeekBar heightBar = (SeekBar) dialog.findViewById(R.id.heightBar);
                     SeekBar widthBar = (SeekBar) dialog.findViewById(R.id.widthBar);
                     heightBar.setProgress((view.getHeight() - btnMinSize) / 2);
-                    widthBar.setProgress((view.getHeight() - btnMinSize) / 2);
+                    widthBar.setProgress((view.getWidth() - btnMinSize) / 2);
 
                     heightBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
@@ -138,14 +130,16 @@ public class MainActivity extends AppCompatActivity {
                             exampleParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
                             btnExample.setLayoutParams(exampleParams);
 
-                            int topMargin = ((RelativeLayout.LayoutParams)view.getLayoutParams()).topMargin;
-                            int leftMargin = ((RelativeLayout.LayoutParams)view.getLayoutParams()).leftMargin;
                             RelativeLayout.LayoutParams liveParams = new RelativeLayout.LayoutParams(view.getLayoutParams());
                             liveParams.height = btnMinSize + i * 2;
-                            liveParams.topMargin = topMargin;
-                            liveParams.leftMargin = leftMargin;
                             view.setLayoutParams(liveParams);
-                            System.out.println(liveParams.width + ", " + liveParams.height);
+                            if (view.getY() + view.getLayoutParams().height > layoutPad.getHeight()) {
+                                view.animate()
+                                        .x(view.getX())
+                                        .y(layoutPad.getHeight() - view.getLayoutParams().height)
+                                        .setDuration(0)
+                                        .start();
+                            }
                         }
 
                         @Override
@@ -167,14 +161,16 @@ public class MainActivity extends AppCompatActivity {
                             exampleParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
                             btnExample.setLayoutParams(exampleParams);
 
-                            int topMargin = ((RelativeLayout.LayoutParams)view.getLayoutParams()).topMargin;
-                            int leftMargin = ((RelativeLayout.LayoutParams)view.getLayoutParams()).leftMargin;
                             RelativeLayout.LayoutParams liveParams = new RelativeLayout.LayoutParams(view.getLayoutParams());
                             liveParams.width = btnMinSize + i * 2;
-                            liveParams.topMargin = topMargin;
-                            liveParams.leftMargin = leftMargin;
                             view.setLayoutParams(liveParams);
-                            System.out.println(liveParams.width + ", " + liveParams.height);
+                            if (view.getX() + view.getLayoutParams().width > layoutPad.getWidth()) {
+                                view.animate()
+                                        .x(layoutPad.getWidth() - view.getLayoutParams().width)
+                                        .y(view.getY())
+                                        .setDuration(0)
+                                        .start();
+                            }
                         }
 
                         @Override
@@ -248,21 +244,35 @@ public class MainActivity extends AppCompatActivity {
                     RelativeLayout.LayoutParams params = new
                             RelativeLayout.LayoutParams((btnMinSize + btnMaxSize) / 2, (btnMinSize + btnMaxSize) / 2);
 
-                    if (x + params.width > layoutPad.getWidth()) {
-                        params.leftMargin = layoutPad.getWidth() - params.width;
-                    }
-                    else {
-                        params.leftMargin = (int) x;
-                    }
-
-                    if (y + params.height > layoutPad.getHeight()) {
-                        params.topMargin = layoutPad.getHeight() - params.height;
-                    }
-                    else {
-                        params.topMargin = (int) y;
-                    }
-
                     layoutPad.addView(button, params);
+
+                    float endX, endY;
+
+                    if (x < 0) {
+                        endX = 0;
+                    } else if (x + button.getLayoutParams().width > layoutPad.getWidth()) {
+                        endX = layoutPad.getWidth() - button.getLayoutParams().width;
+                    } else {
+                        endX = (float) x;
+                    }
+                    System.out.println(y + "," + button.getLayoutParams().height + "," + layoutPad.getHeight());
+                    System.out.println(layoutPad.getChildCount());
+                    if (y < 0) {
+                        endY = 0;
+                    } else if (y + button.getLayoutParams().height > layoutPad.getHeight()) {
+                        endY = layoutPad.getHeight() - button.getLayoutParams().height;
+                    } else {
+                        endY = (float) y;
+                    }
+                    button.animate()
+                            .x(endX)
+                            .y(endY)
+                            .setDuration(0)
+                            .start();
+
+                    System.out.println(endY + "," + button.getY());
+
+
                 }
 
                 else {
