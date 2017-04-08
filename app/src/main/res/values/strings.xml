@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">BeatsByDroid</string>
+    <string-array name="color_array">
+        <item>White</item>
+        <item>Blue</item>
+        <item>Red</item>
+        <item>Green</item>
+        <item>Yellow</item>
+    </string-array>
 </resources>
